@@ -1,0 +1,17 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:02:14.000
+Let's open a real spreadsheet and look at how it's organized.
+
+2
+00:02:14.000 --> 00:04:30.000
+Each row is a record — one observation, like a single customer order.
+
+3
+00:04:30.000 --> 00:06:50.000
+Each column is a field — one piece of information about that record.
+
+4
+00:06:50.000 --> 00:08:00.000
+Once you can name rows and columns, you can talk about any dataset.

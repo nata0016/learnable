@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens as CSS custom properties (R G B channels, no commas) so
+ * Tailwind's `rgb(var(--color-x) / <alpha-value>)` pattern works and so
+ * accessibility preferences (high contrast) can override tokens app-wide
+ * from a single place, without touching any component.
+ */
+:root {
+  --color-paper: 245 248 248;
+  --color-surface: 255 255 255;
+  --color-ink: 20 35 43;
+  --color-muted: 74 91 98;
+  --color-teal: 10 108 121;
+  --color-deep: 7 59 68;
+  --color-coral: 194 65 12;
+  --color-mint: 95 211 196;
+  --color-line: 219 230 230;
+  --color-tint: 231 241 241;
+  --color-success: 15 122 61;
+  --color-warn: 138 83 0;
+  --color-error: 180 35 24;
+  --color-info: 23 92 211;
+
+  /* Bridges to next/font's --font-sans-base (see layout.tsx for why this
+     indirection exists — it's what lets the dyslexia override below avoid a
+     self-referential, invalid custom property). */
+  --font-sans: var(--font-sans-base);
+}
+
+body {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+*:focus-visible {
+  outline: 3px solid rgb(var(--color-coral));
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px rgba(10, 108, 121, 0.28);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Accessibility preferences (src/store/preferences.ts + PreferencesEffect) */
+/* ---------------------------------------------------------------------- */
+
+/* Text size: html has a 16px base, and the app is built entirely on
+   Tailwind's rem-based type scale, so changing the root font-size scales
+   every rem-based font-size, spacing-in-em, and line-height together. */
+html[data-text-scale="large"] {
+  font-size: 18px;
+}
+
+html[data-text-scale="xlarge"] {
+  font-size: 20px;
+}
+
+/* High contrast: override a focused subset of tokens — the ones that carry
+   everyday body text and borders — to a verified higher-contrast set.
+   Every component already reads these as `rgb(var(--color-x) / ...)`, so
+   nothing else needs to change.
+   Contrast vs paper/surface (white-ish): ink 21:1, muted ~10.5:1, line ~5.2:1
+   (line is a border/non-text color; WCAG 1.4.11 only requires 3:1). */
+html[data-contrast="high"] {
+  --color-ink: 0 0 0;
+  --color-muted: 64 64 64;
+  --color-line: 92 112 112;
+}
+
+/* Reduce motion: same effect as the OS-level media query above, but as an
+   explicit in-app override that doesn't depend on OS settings. */
+html[data-reduce-motion="on"] *,
+html[data-reduce-motion="on"] *::before,
+html[data-reduce-motion="on"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Dyslexia-friendly font: swap the body font. Reads --font-sans-base (the
+   original next/font stack), not --font-sans, so this doesn't redefine
+   --font-sans in terms of itself — that would be a circular custom property
+   and silently invalid, falling back to the browser's serif default. */
+html[data-dyslexia="true"] {
+  --font-sans: "OpenDyslexic", var(--font-sans-base);
+}
